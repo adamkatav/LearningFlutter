@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:ftpconnect/ftpconnect.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +35,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Image? _chosenImage;
+  File? _chosenImageFile;
+  TextEditingController textEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,6 +56,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('Take picture'),
               )
             ]),
+            Row(
+              children: <Widget>[
+                Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: textEditingController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'FTP server IP'),
+                    )),
+                ElevatedButton(
+                    onPressed: sendImage, child: const Text('Send image!'))
+              ],
+            ),
             currentImage,
           ],
         ),
@@ -65,6 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return _chosenImage ?? Image.asset('assets/images/head.png');
   }
 
+  File get currentFile {
+    return _chosenImageFile ?? File('EMPTY FILE');
+  }
+
   void chooseImage(var source) async {
     //await Permission.camera.request();
     final ImagePicker _picker = ImagePicker();
@@ -73,8 +94,36 @@ class _MyHomePageState extends State<MyHomePage> {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
         _chosenImage = Image.file(File(image.path));
+        _chosenImageFile = File(image.path);
       }
     }
     setState(() {});
+  }
+
+  void sendImage() async {
+    FTPConnect ftpConnect =
+        FTPConnect(textEditingController.text, user: 'adam', pass: '318758489');
+    try {
+      await ftpConnect.connect();
+      await ftpConnect.uploadFile(currentFile);
+      await ftpConnect.disconnect();
+    } catch (e) {
+      AlertDialog alert = AlertDialog(
+        title: const Text("Error!"),
+        content: Text(e.toString()),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {},
+          ),
+        ],
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
   }
 }

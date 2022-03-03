@@ -29,6 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  ftpconnect: ^1.0.0
   image_picker:
   permission_handler: ^9.2.0
 
