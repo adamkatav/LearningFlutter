@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const MyApp());
@@ -65,10 +66,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void chooseImage(var source) async {
+    //await Permission.camera.request();
     final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: source);
-    if (image != null) {
-      _chosenImage = Image.file(File(image.path));
+    if (source == ImageSource.gallery ||
+        await Permission.camera.request().isGranted) {
+      final XFile? image = await _picker.pickImage(source: source);
+      if (image != null) {
+        _chosenImage = Image.file(File(image.path));
+      }
     }
     setState(() {});
   }

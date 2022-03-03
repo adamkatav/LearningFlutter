@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker:
+  permission_handler: ^9.2.0
 
 
 dev_dependencies:
