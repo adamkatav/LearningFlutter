@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Image get currentImage {
-    return _chosenImage ?? Image.asset('assets/images/head.png');
+    return _chosenImage ?? Image.asset('assets/images/boar.jpg');
   }
 
   File get currentFile {
@@ -136,7 +136,10 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           TextButton(
             child: const Text("OK"),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
           ),
         ],
       );
@@ -147,5 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       );
     }
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 }
