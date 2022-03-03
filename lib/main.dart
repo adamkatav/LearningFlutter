@@ -36,7 +36,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Image? _chosenImage;
   File? _chosenImageFile;
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController ipEditingController = TextEditingController();
+  TextEditingController userEditingController = TextEditingController();
+  TextEditingController passEditingController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,9 +61,29 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               children: <Widget>[
                 Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: userEditingController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'username'),
+                    )),
+                Expanded(
+                    flex: 1,
+                    child: TextFormField(
+                      controller: passEditingController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'password'),
+                    ))
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
                     flex: 2,
                     child: TextFormField(
-                      controller: textEditingController,
+                      controller: ipEditingController,
                       decoration: const InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'FTP server IP'),
@@ -101,8 +123,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void sendImage() async {
-    FTPConnect ftpConnect =
-        FTPConnect(textEditingController.text, user: 'adam', pass: '318758489');
+    FTPConnect ftpConnect = FTPConnect(ipEditingController.text,
+        user: userEditingController.text, pass: passEditingController.text);
     try {
       await ftpConnect.connect();
       await ftpConnect.uploadFile(currentFile);
