@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ftpconnect/ftpconnect.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -89,7 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           labelText: 'FTP server IP'),
                     )),
                 ElevatedButton(
-                    onPressed: sendImage, child: const Text('Send image!'))
+                    onPressed: sendImage, child: const Text('Send image!')),
+                ElevatedButton(
+                    onPressed: downloadJson,
+                    child: const Text('download test.json!'))
               ],
             ),
             currentImage,
@@ -120,6 +124,60 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     setState(() {});
+  }
+
+  void downloadJson() async {
+    FTPConnect ftpConnect = FTPConnect(ipEditingController.text,
+        user: userEditingController.text, pass: passEditingController.text);
+    try {
+      await Permission.storage.request();
+      await ftpConnect.connect();
+      String fileName = 'test.json';
+      final Directory directory = await getApplicationDocumentsDirectory();
+      final File file = File('${directory.path}/$fileName');
+      await ftpConnect.downloadFileWithRetry(fileName, file);
+      await ftpConnect.disconnect();
+      AlertDialog showText = AlertDialog(
+        title: const Text("Hello!"),
+        content: Text(await file.readAsString()),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.pop(context);
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+          ),
+        ],
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return showText;
+        },
+      );
+    } catch (e) {
+      AlertDialog alert = AlertDialog(
+        title: const Text("Error!"),
+        content: Text(e.toString()),
+        actions: [
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.pop(context);
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+          ),
+        ],
+      );
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+    FocusScope.of(context).requestFocus(FocusNode());
   }
 
   void sendImage() async {
