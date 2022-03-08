@@ -29,6 +29,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  forge2d: ^0.8.1
   ftpconnect: ^1.0.0
   image_picker:
   path_provider: ^2.0.9
